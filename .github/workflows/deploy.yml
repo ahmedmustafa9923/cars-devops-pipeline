@@ -1,0 +1,38 @@
+name: DevOps Cars App CI/CD Pipeline
+
+# Trigger the automation engine every time a worker pushes code to the master branch
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # Spins up a fresh, isolated Linux runner in the cloud
+
+    steps:
+    - name: 1. Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: 2. Set up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-node-version: '3.11'
+
+    - name: 3. Run Static Code Linting
+      run: |
+        python -m pip install --upgrade pip
+        # Ensures your app.py has no structural compilation syntax errors
+        python -m py_compile app.py 
+
+    - name: 4. Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 5. Compile & Verify Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false # Set to true once you link your Docker Hub registry credentials
+        tags: cars-app:latest
+
+
