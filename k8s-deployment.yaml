@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cars-app-deployment
+  labels:
+    app: cars-app
+spec:
+  replicas: 3 # Automatically creates 3 identical, running copies of your container for backup
+  selector:
+    matchLabels:
+      app: cars-app
+  template:
+    metadata:
+      labels:
+        app: cars-app
+    spec:
+      containers:
+      - name: cars-container
+        image: cars-app:v1 # Instructs Kubernetes to use your exact compiled Docker image
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cars-app-service
+spec:
+  type: LoadBalancer # Automatically creates a local network entry point to route incoming traffic
+  ports:
+  - port: 9000       # You will access your K8s app on port 9000
+    targetPort: 8080 # It routes traffic straight to port 8080 inside the container pods
+  selector:
+    app: cars-app
+
+

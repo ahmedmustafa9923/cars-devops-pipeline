@@ -15,6 +15,10 @@ COPY app.py /app/app.py
 # Step 5: Inform Docker that the container will listen on web port 8080
 EXPOSE 8080
 
+RUN adduser -D devopsuser && chown -R devopsuser:devopsuser /app
+USER devopsuser
+
+
 # Step 6: Start your python web application
 CMD ["python", "app.py"]
 
